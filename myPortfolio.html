@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Work+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141b26;
+    --paper:#f4efe3;
+    --paper-shade:#e8e0cd;
+    --amber:#c8862c;
+    --teal:#3f7d78;
+    --line:#d9d0b8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:radial-gradient(ellipse at center, #1c2634 0%, #0d1219 100%);
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:'Work Sans', sans-serif;
+    padding:40px 16px;
+    overflow-x:hidden;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.65rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--amber);
+  }
+  h1,h2,h3{font-family:'Spectral', serif; font-weight:600; color:var(--ink);}
+
+  .stage{ width:100%; max-width:920px; }
+
+  .book{
+    position:relative;
+    width:100%;
+    aspect-ratio: 920 / 580;
+    perspective:2600px;
+    margin:0 auto;
+  }
+
+  /* COVER */
+  .cover{
+    position:absolute; inset:0;
+    background:linear-gradient(135deg,#1a2330,#0f151e);
+    border-radius:4px 8px 8px 4px;
+    box-shadow:0 30px 70px rgba(0,0,0,0.6), inset -4px 0 12px rgba(0,0,0,0.5);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:14px;
+    z-index:30;
+    cursor:pointer;
+    transform-origin:left center;
+    transform-style:preserve-3d;
+    transition:transform 1.1s cubic-bezier(.45,.05,.35,1);
+    border:1px solid rgba(200,134,44,0.25);
+  }
+  .cover.open{ transform:rotateY(-165deg); }
+  .cover-frame{
+    border:1px solid rgba(200,134,44,0.4);
+    padding:50px 60px;
+    max-width:80%;
+  }
+  .cover-frame h1{
+    color:var(--paper); font-size:clamp(1.9rem,5vw,3rem); margin:14px 0 8px; letter-spacing:-0.01em;
+  }
+  .cover-hint{
+    color:var(--paper); opacity:0.55; font-family:'JetBrains Mono',monospace; font-size:0.68rem;
+    display:flex; align-items:center; justify-content:center; gap:8px; margin-top:26px;
+  }
+  .cover-hint::after{content:'›'; color:var(--amber); font-size:1rem;}
+
+  /* BOOK BODY */
+  .spread{
+    position:absolute; inset:0;
+    display:flex;
+    background:var(--paper);
+    border-radius:4px 8px 8px 4px;
+    box-shadow:0 30px 70px rgba(0,0,0,0.55);
+    overflow:hidden;
+  }
+  .spread::before{
+    content:'';
+    position:absolute; left:50%; top:0; bottom:0; width:26px; margin-left:-13px;
+    background:linear-gradient(90deg, rgba(0,0,0,0.14), rgba(0,0,0,0) 20%, rgba(0,0,0,0) 80%, rgba(0,0,0,0.14));
+    pointer-events:none; z-index:5;
+  }
+  .page{
+    width:50%; height:100%;
+    padding:32px 34px;
+    position:relative;
+    overflow:auto;
+  }
+  .page-left{ padding-right:24px; cursor:w-resize; }
+  .page-right{ padding-left:24px; cursor:e-resize; background:var(--paper-shade); }
+
+  .page-inner{ min-height:100%; display:flex; flex-direction:column; }
+  .chapter-num{
+    font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--amber);
+    letter-spacing:0.14em; text-transform:uppercase;
+  }
+  .page h2{ font-size:clamp(1.05rem,2.3vw,1.4rem); margin:6px 0 14px; color:var(--ink); }
+  .page p{ font-size:0.8rem; line-height:1.6; color:#2c3038; opacity:0.88; }
+
+  /* PROFILE PAGE */
+  .avatar{
+    width:78px; height:78px; border-radius:50%;
+    background:linear-gradient(135deg,var(--amber),var(--teal));
+    display:flex; align-items:center; justify-content:center;
+    color:var(--paper); font-family:'Spectral',serif; font-weight:700; font-size:1.4rem;
+    margin-bottom:14px;
+  }
+  .socials{ display:flex; gap:12px; margin:14px 0 18px; }
+  .socials a{
+    width:32px; height:32px; border-radius:50%; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink); transition:border-color .2s, color .2s;
+  }
+  .socials a:hover{ border-color:var(--amber); color:var(--amber); }
+  .socials svg{ width:15px; height:15px; }
+
+  /* EDUCATION */
+  .edu-item{ margin-bottom:18px; padding-left:14px; border-left:2px solid var(--amber); }
+  .edu-item .yr{ font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:var(--teal); display:block; margin-bottom:3px; }
+  .edu-item h3{ font-size:0.92rem; color:var(--ink); font-family:'Spectral',serif; }
+  .edu-item p{ font-size:0.76rem; margin-top:3px; opacity:0.75; }
+
+  /* SERVICES */
+  .service-item{ padding:12px 0; border-bottom:1px dashed var(--line); }
+  .service-item h3{ font-size:0.88rem; font-family:'Spectral',serif; color:var(--ink); }
+  .service-item p{ font-size:0.76rem; margin-top:4px; opacity:0.75; }
+
+  /* SKILLS */
+  .skill-block{ margin-bottom:16px; }
+  .skill-block h3{
+    font-family:'JetBrains Mono',monospace; font-size:0.66rem; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--teal); margin-bottom:6px;
+  }
+  .skill-block ul{ list-style:none; }
+  .skill-block li{ font-size:0.8rem; padding:3px 0; opacity:0.85; }
+  .skill-block.now h3{ color:var(--amber); }
+
+  /* PROJECTS */
+  .proj-group{ margin-bottom:16px; }
+  .proj-group h3{
+    font-family:'JetBrains Mono',monospace; font-size:0.66rem; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--teal); margin-bottom:8px;
+  }
+  .proj-group ul{ list-style:none; }
+  .proj-group li{
+    font-size:0.82rem; padding:6px 0; border-bottom:1px dotted var(--line); opacity:0.88;
+  }
+  .proj-group.featured h3{ color:var(--amber); }
+
+  /* CONTACT */
+  .contact-list{ list-style:none; margin-top:14px; }
+  .contact-list li{ font-family:'JetBrains Mono',monospace; font-size:0.78rem; padding:7px 0; }
+  .contact-list a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--amber); }
+  .badge{
+    display:inline-block; margin-top:18px; font-family:'JetBrains Mono',monospace; font-size:0.66rem;
+    text-transform:uppercase; letter-spacing:0.08em; background:var(--amber); color:var(--ink);
+    padding:5px 12px; border-radius:2px;
+  }
+
+  .pagenum{
+    position:absolute; bottom:14px; font-family:'JetBrains Mono',monospace; font-size:0.62rem; color:#8a8267;
+  }
+  .pagenum.left{ left:34px; }
+  .pagenum.right{ right:34px; }
+
+  /* FLIPPING LEAF */
+  .flip-page{
+    position:absolute; top:0; bottom:0; width:50%;
+    display:none;
+    transform-style:preserve-3d;
+    z-index:20;
+  }
+  .flip-face{
+    position:absolute; inset:0;
+    backface-visibility:hidden;
+    background:var(--paper);
+    overflow:hidden;
+    box-shadow:0 0 24px rgba(0,0,0,0.25);
+  }
+  .flip-back{ transform:rotateY(180deg); background:var(--paper-shade); }
+  .flip-page.flip-next{ left:50%; transform-origin:left center; transition:transform 0.9s cubic-bezier(.45,.05,.35,1); transform:rotateY(-180deg); }
+  .flip-page.flip-prev{ left:0; transform-origin:right center; transition:transform 0.9s cubic-bezier(.45,.05,.35,1); transform:rotateY(180deg); }
+
+  /* CONTROLS */
+  .controls{
+    display:flex; align-items:center; justify-content:center; gap:22px; margin-top:26px;
+  }
+  .navbtn{
+    font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--paper);
+    background:transparent; border:1px solid rgba(244,239,227,0.25); padding:10px 18px;
+    border-radius:2px; cursor:pointer; transition:border-color 0.2s, color 0.2s;
+  }
+  .navbtn:hover:not(:disabled){ border-color:var(--amber); color:var(--amber); }
+  .navbtn:disabled{ opacity:0.3; cursor:default; }
+  .indicator{
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--paper); opacity:0.6;
+    min-width:70px; text-align:center;
+  }
+
+  @media (max-width:700px){
+    .book{ aspect-ratio:auto; height:78vh; }
+    .page{ padding:20px 16px; }
+    .page-left{ padding-right:12px; }
+    .page-right{ padding-left:12px; }
+    .cover-frame{ padding:30px 22px; }
+    .page p, .service-item p, .edu-item p{ font-size:0.72rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .cover, .flip-page{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="book" id="book">
+
+    <div class="cover" id="cover">
+      <div class="cover-frame">
+        <p class="eyebrow">Physics &amp; Maths → Data Science</p>
+        <h1>My Portfolio</h1>
+        <p class="cover-hint">Click to open</p>
+      </div>
+    </div>
+
+    <div class="spread" id="spread">
+      <div class="page page-left" id="pageLeft"></div>
+      <div class="page page-right" id="pageRight"></div>
+    </div>
+
+    <div class="flip-page" id="flipPage">
+      <div class="flip-face flip-front" id="flipFront"></div>
+      <div class="flip-face flip-back" id="flipBack"></div>
+    </div>
+
+  </div>
+
+  <div class="controls">
+    <button class="navbtn" id="prevBtn">‹ Prev</button>
+    <span class="indicator" id="indicator">— / —</span>
+    <button class="navbtn" id="nextBtn">Next ›</button>
+  </div>
+</div>
+
+<script>
+/* ---------- icons ---------- */
+const icon = {
+  linkedin: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V23h-4V8zm7.5 0h3.8v2.05h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V23h-4v-6.9c0-1.65-.03-3.77-2.3-3.77-2.3 0-2.65 1.8-2.65 3.65V23h-4V8z"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.8l-5.3-6.9L4.8 22H1.7l8.2-9.4L1 2h7l4.8 6.4L18.9 2zM17.6 20h1.9L7.5 3.9H5.5L17.6 20z"/></svg>`,
+  instagram: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c2.7 0 3.05.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.9 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.07.06 1.42.06 4.12s-.01 3.05-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 01-1.15 1.77c-.55.55-1.11.9-1.77 1.15-.64.25-1.37.42-2.43.47-1.07.05-1.42.06-4.12.06s-3.05-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 01-1.77-1.15 4.9 4.9 0 01-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.05 2 14.7 2 12s.01-3.05.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77A4.9 4.9 0 015.45 2.53c.64-.25 1.37-.42 2.43-.47C8.95 2.01 9.3 2 12 2zm0 1.8c-2.65 0-2.97.01-4.02.06-.86.04-1.33.18-1.64.3-.41.16-.71.35-1.02.66-.31.31-.5.61-.66 1.02-.12.31-.26.78-.3 1.64C4.31 9.03 4.3 9.35 4.3 12s.01 2.97.06 4.02c.04.86.18 1.33.3 1.64.16.41.35.71.66 1.02.31.31.61.5 1.02.66.31.12.78.26 1.64.3 1.05.05 1.37.06 4.02.06s2.97-.01 4.02-.06c.86-.04 1.33-.18 1.64-.3.41-.16.71-.35 1.02-.66.31-.31.5-.61.66-1.02.12-.31.26-.78.3-1.64.05-1.05.06-1.37.06-4.02s-.01-2.97-.06-4.02c-.04-.86-.18-1.33-.3-1.64a2.7 2.7 0 00-.66-1.02 2.7 2.7 0 00-1.02-.66c-.31-.12-.78-.26-1.64-.3-1.05-.05-1.37-.06-4.02-.06zm0 3.7a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 1.8a2.7 2.7 0 100 5.4 2.7 2.7 0 000-5.4zm5.72-1.98a1.05 1.05 0 11-2.1 0 1.05 1.05 0 012.1 0z"/></svg>`,
+  tiktok: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 2h-3.2v13.4a3 3 0 11-2.2-2.9V9.2a6.2 6.2 0 105.4 6.2V8.3a7.9 7.9 0 004.4 1.4V6.5a4.7 4.7 0 01-4.4-4.5z"/></svg>`
+};
+
+function pageWrap(num, align, inner){
+  return `<div class="page-inner">${inner}<div class="pagenum ${align}">${num}</div></div>`;
+}
+
+/* ---------- page content ---------- */
+const content = {
+  1: pageWrap(1,'left', `
+    <p class="chapter-num">Page I</p>
+    <div class="avatar"><img src="C:\Users\HP\Pictures\Screenshot_20251119_220409_Google.jpg"></div>
+    <h2 style="margin-top:0;">EDWIN ALITUHA</h2>
+    <div class="socials">
+      <a href="#" title="LinkedIn">${icon.linkedin}</a>
+      <a href="#" title="X">${icon.x}</a>
+      <a href="#" title="Instagram">${icon.instagram}</a>
+      <a href="#" title="TikTok">${icon.tiktok}</a>
+    </div>
+    <p>I'm a Year 2 BSc Physics &amp; Mathematics student, majoring in Maths, with a growing passion for
+    data science. I build for the web on the side and love turning raw numbers into things people can
+    actually understand.</p>
+  `),
+  2: pageWrap(2,'right', `
+    <p class="chapter-num">Page II</p>
+    <h2>Education</h2>
+    <div class="edu-item">
+      <span class="yr">Secondary</span>
+      <h3>Midland High School</h3>
+      <p>Foundational studies in sciences and mathematics.</p>
+    </div>
+    <div class="edu-item">
+      <span class="yr">2025 — Present</span>
+      <h3>Makerere University</h3>
+      <p>BSc Physics &amp; Mathematics, majoring in Maths. Aspiring toward data science.</p>
+    </div>
+  `),
+  3: pageWrap(3,'left', `
+    <p class="chapter-num">Page III</p>
+    <h2>My Services</h2>
+    <div class="service-item">
+      <h3>Web Building</h3>
+      <p>Designing and building websites from the ground up, with a focus on the front end.</p>
+    </div>
+    <div class="service-item">
+      <h3>Website Restructuring</h3>
+      <p>Reworking existing sites for better structure, performance, and usability.</p>
+    </div>
+    <div class="service-item">
+      <h3>Data Analysis</h3>
+      <p>Cleaning, exploring, and visualizing data to surface useful insight.</p>
+    </div>
+    <div class="service-item" style="border-bottom:none;">
+      <h3>& more</h3>
+      <p>Always open to related work — ask if it's not listed here.</p>
+    </div>
+  `),
+  4: pageWrap(4,'right', `
+    <p class="chapter-num">Page IV</p>
+    <h2>Skills</h2>
+    <div class="skill-block">
+      <h3>Established</h3>
+      <ul><li>HTML</li><li>CSS</li><li>JavaScript</li><li>React</li></ul>
+    </div>
+    <div class="skill-block now">
+      <h3>Currently learning</h3>
+      <ul><li>Pandas</li><li>NumPy</li><li>Other data science tools</li></ul>
+    </div>
+  `),
+  5: pageWrap(5,'left', `
+    <p class="chapter-num">Page V</p>
+    <h2>Projects</h2>
+    <div class="proj-group">
+      <h3>Projects</h3>
+      <ul>
+        <li>Portfolios</li>
+        <li>Menus</li>
+        <li>Expense Tracker</li>
+      </ul>
+    </div>
+    <div class="proj-group featured">
+      <h3>Featured Web Apps</h3>
+      <ul>
+        <li>Hologram</li>
+        <li>Music Player</li>
+        <li>Boda Traffic Tracker</li>
+      </ul>
+    </div>
+  `),
+  6: pageWrap(6,'right', `
+    <p class="chapter-num">Page VI</p>
+    <h2>Contact Me</h2>
+    <p>Have a project in mind, or want to connect? Reach out below.</p>
+    <ul class="contact-list">
+      <li><a href="mailto:edwinalituha1.com">your.email@example.com</a></li>
+      <li><a href="#">GitHub</a></li>
+      <li><a href="#">LinkedIn</a></li>
+    </ul>
+    <span class="badge">Open to internships</span>
+  `)
+};
+
+/* ---------- book engine ---------- */
+const totalSpreads = 3;
+let currentSpread = 0;
+let animating = false;
+
+const pageLeft = document.getElementById('pageLeft');
+const pageRight = document.getElementById('pageRight');
+const flipPage = document.getElementById('flipPage');
+const flipFront = document.getElementById('flipFront');
+const flipBack = document.getElementById('flipBack');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const indicator = document.getElementById('indicator');
+const cover = document.getElementById('cover');
+
+function renderSpread(i){
+  const leftNum = i*2 + 1;
+  const rightNum = leftNum + 1;
+  pageLeft.innerHTML = content[leftNum] || '';
+  pageRight.innerHTML = content[rightNum] || '';
+}
+
+function updateControls(){
+  prevBtn.disabled = currentSpread === 0 || animating;
+  nextBtn.disabled = currentSpread === totalSpreads - 1 || animating;
+  indicator.textContent = `${currentSpread+1} / ${totalSpreads}`;
+}
+
+function flip(direction){
+  if(animating) return;
+  if(direction==='next' && currentSpread >= totalSpreads-1) return;
+  if(direction==='prev' && currentSpread <= 0) return;
+  animating = true;
+
+  if(direction==='next'){
+    const oldRightHTML = pageRight.innerHTML;
+    renderSpread(currentSpread+1);
+    flipFront.innerHTML = oldRightHTML;
+    flipBack.innerHTML = '';
+    flipPage.style.display='block';
+    flipPage.className = 'flip-page';
+    void flipPage.offsetWidth;
+    flipPage.classList.add('flip-next');
+    setTimeout(()=>{
+      flipPage.style.display='none';
+      flipPage.classList.remove('flip-next');
+      currentSpread++;
+      animating = false;
+      updateControls();
+    }, 900);
+  } else {
+    const oldLeftHTML = pageLeft.innerHTML;
+    renderSpread(currentSpread-1);
+    flipFront.innerHTML = oldLeftHTML;
+    flipBack.innerHTML = '';
+    flipPage.style.display='block';
+    flipPage.className = 'flip-page';
+    void flipPage.offsetWidth;
+    flipPage.classList.add('flip-prev');
+    setTimeout(()=>{
+      flipPage.style.display='none';
+      flipPage.classList.remove('flip-prev');
+      currentSpread--;
+      animating = false;
+      updateControls();
+    }, 900);
+  }
+}
+
+renderSpread(0);
+updateControls();
+
+cover.addEventListener('click', ()=>{
+  cover.classList.add('open');
+  setTimeout(()=>{ cover.style.pointerEvents='none'; }, 1100);
+});
+
+nextBtn.addEventListener('click', ()=>flip('next'));
+prevBtn.addEventListener('click', ()=>flip('prev'));
+pageRight.addEventListener('click', (e)=>{ if(e.target===pageRight) flip('next'); });
+pageLeft.addEventListener('click', (e)=>{ if(e.target===pageLeft) flip('prev'); });
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='ArrowRight') flip('next');
+  if(e.key==='ArrowLeft') flip('prev');
+});
+</script>
+
+</body>
+</html>
